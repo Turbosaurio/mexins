@@ -1,0 +1,477 @@
+$pics: '/pics/';
+
+@mixin triangle-hover($border-side: bottom, $border-color: red){
+	&:after:hover,
+	&:after:focus{
+		border-#{$border-side}-color: $border-color;
+	}
+}
+
+@mixin triangle(
+	$direction: bottom, 
+	$background: blue, 
+	$stroke-width: 25px, 
+	$height: 0, 
+	$width: 0, 
+	$hover: null, 
+	$hover-color: red
+	){
+	position: relative;
+	&:after{
+		content: "";
+		position: absolute;
+		transform: traslateX(-75%);
+		top: $height;
+		left: $width;
+		width: 0; 
+	  height: 0;
+	  z-index: -10;
+		@if $direction == top {
+			border: {
+				left: $stroke-width solid transparent;
+				right: $stroke-width solid transparent;
+				bottom: $stroke-width solid $background;
+			}
+		}@if $direction == bottom {
+			border: {
+				left: $stroke-width solid transparent;
+				right: $stroke-width solid transparent;
+				top: $stroke-width solid $background;
+			}
+		}@if $direction == right {
+			border: {
+				top: $stroke-width solid transparent;
+		  	bottom: $stroke-width solid transparent;
+		  	left: $stroke-width solid $background;
+			}
+		}@if  $direction == left {
+			border: {
+				top: $stroke-width solid transparent;
+		  	bottom: $stroke-width solid transparent; 
+		  	right: $stroke-width solid $background;
+			}
+		}
+
+		@if $hover != null {
+			@include triangle-hover($direction, $hover-color);
+		}
+	}
+}
+
+
+@mixin logo-before{
+	@include flex-all($justify: center, $align: center);
+	&:before{
+		// original size 700x600
+		content: "";
+		display: block;
+		margin-right: 20px;
+		background: {
+			image: url('/pics/title-before-logo.png');
+			size: contain;
+			position: center center;
+			repeat: no-repeat;
+		}
+		width: 70px;
+		height: 60px;
+	}
+}
+
+
+@mixin white-gradient($start: black, $mid: transparent, $end: black){
+	position: relative;
+	&:after{
+		content: "";
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		z-index: 110;
+		background-image: none;
+		background-image: -webkit-linear-gradient(left, $start, $mid, $end);
+		background-image: -o-linear-gradient(right, $start, $mid, $end);
+		background-image: -moz-linear-gradient(right, $start, $mid, $end);
+		background-image: linear-gradient(to right, $start, $mid, $end); 
+	}
+}
+
+
+
+//containers
+@mixin responsive-container($min: 90%, $only-large: null){
+	@include width-constrain($min);
+	@if $only-large == null {
+		@include respond-to-min-max($vp-mid, $vp-large){
+			@include width-constrain($vp-mid);
+		}
+		@include respond-to-min-max($vp-large, $vp-max){
+			@include width-constrain($vp-large);
+		}
+	}
+	@include respond-to($vp-max){
+		@include width-constrain($vp-max);
+	}
+}
+
+
+
+///TEXT MIXINS
+
+@mixin body-link($color, $hover){
+	a{
+		text-decoration: none;
+		color: $color !important;
+		&:hover,
+		&:focus{
+			@if $hover == underline {
+				text-decoration: underline;
+			} @else {
+				color: $color;
+			}
+		}
+	}
+}
+
+@mixin body-title(
+	$color: $betty-blue, 
+	$font-size: 3rem, 
+	$hover: null,
+	$weight: 700){
+
+	@if $hover != null{
+		@include body-link($color, $hover);
+	}
+
+	$large-font	: .25rem;
+	$mid-font		: .35rem;
+	$small-font	: .45rem;
+	@if $font-size >= 3rem {
+		$large-font	: .5rem;
+		$mid-font		: .75rem;
+		$small-font	: 1.5rem;
+	}
+	font: {
+		family: $secondary-font;
+		size: $font-size - $small-font;
+		weight: $weight;
+	}
+	line-height: 110%;
+	color: $color !important;
+	@include respond-to-min-max($vp-mid,$vp-large){
+		font-size: $font-size - $mid-font;
+	}
+	@include respond-to-min-max($vp-large,$vp-max){
+		font-size: $font-size - $large-font;
+	}
+	@include respond-to($vp-max){
+		font-size: $font-size;
+	}
+}
+@mixin body-text($font-size: 1.25rem, $line-height: $font-size * 1.5, $color: green){
+	font: {
+		family: $primary-font;
+		size: $font-size;
+	}
+	line-height: $line-height;
+	color: $color;
+}
+
+
+
+////// Transformation
+
+@mixin flipX{
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+
+
+//// Figures and decorations
+
+@mixin solid-shadow($color: black){
+	box-shadow: 0 0 15px 5px rgba($color, 0.2);
+}
+
+@mixin glow-svg($color: blue){
+	-webkit-filter: drop-shadow( 0 0 15px rgba($color,.8) );
+	filter: drop-shadow( 0 0 15px rgba($color,.8) );
+}
+
+
+@mixin gradient-line($color: black, $position: bottom, $width: 1px){
+	position: relative;
+	&:after{
+		content: "";
+		position: absolute;
+		@if $position == bottom || $position == top {
+			width: 100%;
+			height: $width;
+			left: 0;
+		}
+		@if $position == left || $position == right{
+			height: 100%;
+			width: $width;
+			top: 0;
+		}
+		#{$position}: 0;
+		background: -webkit-linear-gradient(left, transparent 0 , rgba($color, 0.3) 50%, transparent 100%); 
+	  background: -moz-linear-gradient(right, transparent 0, rgba($color, 0.3) 50%, transparent 100%); 
+	  background: linear-gradient(to right, transparent 0 , rgba($color, 0.3) 50%, transparent 100%); 
+	}
+	
+}
+
+@mixin rhombus($color: yellow, $width: 50px, $hover: red){
+	position: relative;
+	&:before,
+	&:after {
+		content: "";
+	  display: block;
+	  position: absolute;
+	  width: 0; 
+	  height: 0;
+	  left: 0;
+	  z-index: -5;
+	}
+	&:before {
+	  border: $width solid transparent; 
+	  border-bottom-color: $color;
+	  top: - $width;
+	} 
+	&:after {
+		top: $width;
+		border: $width solid transparent;
+		border-top-color: $color;
+	}
+	&:hover:before,
+	&:focus:before{
+		border-bottom-color: $hover;
+	}
+	&:hover:after,
+	&:focus:after{
+		border-top-color: $hover;
+	}
+}
+
+
+//////Buttons
+
+@mixin link-box($bg-color: red, $hover-color: blue, $hover: null, $shadow: null){
+	@if $shadow != null{
+		@include solid-shadow($almost-black);
+	}
+	display: inline-block;
+	padding: 15px 40px;
+	border-radius: 50px;
+	color: $jack-white !important;
+	background-color: $bg-color;
+	font: {
+		family: $primary-font;
+		size: 1rem;
+		weight: 900;
+	}
+	text: {
+		align: center;
+		transform: uppercase;
+		decoration: none;
+	}
+	&:hover,
+	&:focus{
+		@if $hover != null {
+			background-color: $hover-color;
+		} @else {
+			color: $hover-color;
+		}
+	}
+}
+
+@mixin columns(
+	$number: 2, 
+	$column-class: "column", 
+	$dist: false,
+	$center-column: false, 
+	$gap: 30px){
+	@include width-constrain(100%);
+	// @include respond-to-min-max($vp-mid,$vp-large){
+	// 	@include width-constrain($vp-mid);
+	// 	@include flex-all(row,space-around,flex-start);
+	// }
+	@include respond-to-min-max($vp-large,$vp-max){
+		@include width-constrain($vp-large);
+		@include flex-all(row,space-around,flex-start);
+	}	
+	@include respond-to($vp-max){
+		@include width-constrain($vp-max);
+		@include flex-all(row,space-around,flex-start);
+	}
+	>.#{$column-class}{
+		@if $dist == true {
+			@include flex(1);
+		}
+		@if $center-column == true{
+			@include flex-all(column,space-between,center);
+		}
+		// :not(last-child){
+		// 	margin-right: $gap;
+		// }
+	}
+}
+
+@mixin bg-cover($file, $total: null, $child, $type: '.jpg'){
+	@if $total !=null {
+		@for $i from 1 through $total {
+			.#{$child + $i}{
+				$url: $pics + $file + $i + $type;
+				background-image: url($url);
+			}
+		}
+	} @else {
+		$url: $pics + $file + $type;
+		background-image: url($url);
+	}
+	background: {
+		position: center center;
+		size: cover;
+	}
+}
+
+@mixin square-links(
+	$item-class: 'link-item',
+	$size: 230px, 
+	$margin: 15px, 
+	$bg-color: red, 
+	$bg-hover-color: blue, 
+	$b-radius: 15px, 
+	$total: null,
+	$file: null
+	){
+	@include flex-all(column,center,center);
+	margin: 0;
+	.#{$item-class}{
+		@if $file != null {
+			@include bg-cover($file, $total);
+		}
+		position: relative;
+		width: $size;
+		height: $size;
+		@if $b-radius > 0 {	border-radius: $b-radius }
+		box-sizing: border-box;
+		margin: 0 0 $margin 0;
+		a{
+			@include flex-all(row,center,center);
+			position: relative;
+			box-sizing: border-box;
+			width: $size;
+			height: $size;
+			padding: 15px;
+			font: {
+				size: 1.3rem;
+				weight: 600;
+			}
+			text:{
+				decoration: none;
+				align: center;
+			}
+			color: $jack-white;
+			background-color: $bg-color;
+			@if $b-radius > 0 {	border-radius: $b-radius }
+			&:hover, &:focus{
+				background-color: $bg-hover-color;
+				color: $almost-black;
+			}
+		}
+	}
+	@include respond-to($vp-mid){
+		@include flex-direction(row);
+		margin: 0 0 0 40px;
+		.#{$item-class}{
+			margin: 0 $margin $margin 0;
+		}
+	}
+}
+
+@mixin after-mask($color: rgba($jack-black, .65)){
+	position: relative;
+	&:after{
+		content: "";
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+		background-color: $color;
+	}
+}
+
+@mixin responsive-squares(
+	$initial-height: 200px,
+	$margins: -3px -2px,
+	$number: 3
+	){
+	width: 50%;
+	height: $initial-height;
+	background:{
+		size: cover;
+		position: center center;
+	}
+	margin: -3px -2px;
+	@include respond-to-min-max($vp-mid, $vp-large){
+		width: $vp-mid / $number;
+		height: $vp-mid / $number;
+	}
+	@include respond-to-min-max($vp-large, $vp-max){
+		width: $vp-large / $number;
+		height: $vp-large / $number;
+	}
+	@include respond-to($vp-max){
+		width: $vp-max / $number;
+		height: $vp-max / $number;
+	}
+}
+
+@mixin month-date(
+	$first-child: 'item-over',
+	$second-child: 'item-under'
+	$size-x: 150px,
+	$size-y: null,
+	$bg-color: red,
+	$b-radius: null
+	){
+	@include flex-all(column,center,center)
+	width: $size-x;
+	@if $size-y == null{
+		height: $size-x;
+	}
+	@if $b-radius != null{
+		border-radius: $b-radius;
+	}
+	font: {
+		family: $primary-font;
+	}
+	.#{$first-child}{
+	
+	}
+	.#{$second-child}{
+
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
