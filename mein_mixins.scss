@@ -1,11 +1,5 @@
 $pics: '/pics/';
-
-@mixin triangle-hover($border-side: bottom, $border-color: red){
-	&:after:hover,
-	&:after:focus{
-		border-#{$border-side}-color: $border-color;
-	}
-}
+$bg: $pics + 'bg/';
 
 @mixin triangle(
 	$direction: bottom, 
@@ -51,18 +45,18 @@ $pics: '/pics/';
 		  	right: $stroke-width solid $background;
 			}
 		}
-
+		//in case to change the color of the triangle
 		@if $hover != null {
-			@include triangle-hover($direction, $hover-color);
+			&:hover, &:focus{
+				border-#{$direction}-color: $background;	
+			}
 		}
 	}
 }
 
-
-@mixin logo-before{
-	@include flex-all($justify: center, $align: center);
+//if second is not defined, it's squared shaped
+@mixin logo-before($size-y, $size-x: null){
 	&:before{
-		// original size 700x600
 		content: "";
 		display: block;
 		margin-right: 20px;
@@ -72,8 +66,12 @@ $pics: '/pics/';
 			position: center center;
 			repeat: no-repeat;
 		}
-		width: 70px;
-		height: 60px;
+		height: $size-y;
+		@if $size-x == null {
+			width: $size-y;
+		}@else {
+			width: $size-x
+		}
 	}
 }
 
@@ -102,6 +100,7 @@ $pics: '/pics/';
 //containers
 @mixin responsive-container($min: 90%, $only-large: null){
 	@include width-constrain($min);
+	//background-color: $beige-ruth;\
 	@if $only-large == null {
 		@include respond-to-min-max($vp-mid, $vp-large){
 			@include width-constrain($vp-mid);
@@ -169,13 +168,12 @@ $pics: '/pics/';
 		font-size: $font-size;
 	}
 }
-@mixin body-text($font-size: 1.25rem, $line-height: $font-size * 1.5, $color: green){
+@mixin body-text($font-size: 1.25rem, $line-height: $font-size * 1.5){
 	font: {
 		family: $primary-font;
 		size: $font-size;
 	}
 	line-height: $line-height;
-	color: $color;
 }
 
 
@@ -204,22 +202,15 @@ $pics: '/pics/';
 }
 
 
-@mixin gradient-line($color: black, $position: bottom, $width: 1px){
+@mixin gradient-line-bottom($color: black){
 	position: relative;
 	&:after{
 		content: "";
 		position: absolute;
-		@if $position == bottom || $position == top {
-			width: 100%;
-			height: $width;
-			left: 0;
-		}
-		@if $position == left || $position == right{
-			height: 100%;
-			width: $width;
-			top: 0;
-		}
-		#{$position}: 0;
+		width: 100%;
+		height: 1px;
+		bottom: 0;
+		left: 0;
 		background: -webkit-linear-gradient(left, transparent 0 , rgba($color, 0.3) 50%, transparent 100%); 
 	  background: -moz-linear-gradient(right, transparent 0, rgba($color, 0.3) 50%, transparent 100%); 
 	  background: linear-gradient(to right, transparent 0 , rgba($color, 0.3) 50%, transparent 100%); 
@@ -262,10 +253,8 @@ $pics: '/pics/';
 
 //////Buttons
 
-@mixin link-box($bg-color: red, $hover-color: blue, $hover: null, $shadow: null){
-	@if $shadow != null{
-		@include solid-shadow($almost-black);
-	}
+@mixin link-box($bg-color: red, $hover-color: blue, $hover: null){
+	@include solid-shadow($almost-black);
 	display: inline-block;
 	padding: 15px 40px;
 	border-radius: 50px;
@@ -323,10 +312,10 @@ $pics: '/pics/';
 	}
 }
 
-@mixin bg-cover($file, $total: null, $child, $type: '.jpg'){
+@mixin bg-cover($file, $total: null, $type: '.jpg'){
 	@if $total !=null {
 		@for $i from 1 through $total {
-			.#{$child + $i}{
+			.#{'child-' + $i}{
 				$url: $pics + $file + $i + $type;
 				background-image: url($url);
 			}
@@ -362,7 +351,7 @@ $pics: '/pics/';
 		height: $size;
 		@if $b-radius > 0 {	border-radius: $b-radius }
 		box-sizing: border-box;
-		margin: 0 0 $margin 0;
+		margin: 8px;
 		a{
 			@include flex-all(row,center,center);
 			position: relative;
@@ -387,11 +376,11 @@ $pics: '/pics/';
 			}
 		}
 	}
-	@include respond-to($vp-mid){
+	@include respond-to(530px){
 		@include flex-direction(row);
-		margin: 0 0 0 40px;
+		//margin: 0 0 0 40px;
 		.#{$item-class}{
-			margin: 0 $margin $margin 0;
+			margin: $margin / 2;
 		}
 	}
 }
@@ -433,45 +422,51 @@ $pics: '/pics/';
 		width: $vp-max / $number;
 		height: $vp-max / $number;
 	}
-}
+} 
 
-@mixin month-date(
-	$first-child: 'item-over',
-	$second-child: 'item-under'
-	$size-x: 150px,
-	$size-y: null,
-	$bg-color: red,
-	$b-radius: null
+
+@mixin resize-fonts(
+	$size-a: 4rem,
+	$size-b: 4rem,
+	$size-c: 4rem,
+	$font-a: null,
+	$font-b: null,
+	$font-c: null
 	){
-	@include flex-all(column,center,center)
-	width: $size-x;
-	@if $size-y == null{
-		height: $size-x;
-	}
-	@if $b-radius != null{
-		border-radius: $b-radius;
-	}
-	font: {
-		family: $primary-font;
-	}
-	.#{$first-child}{
-	
-	}
-	.#{$second-child}{
-
+	@if($font-a != null){
+		##{$font-a} {font-size: $size-a * .5}
+		@if ($font-b != null){
+			##{$font-b} {font-size: $size-b * .5}
+		}
+		@if ($font-c != null){
+			##{$font-c} {font-size: $size-c * .5}
+		}
+		@include respond-to-min-max($vp-mid, $vp-large){
+			##{$font-a} {font-size: $size-a * .6}
+			@if ($font-b != null){
+				##{$font-b} {font-size: $size-b * .6}
+			}
+			@if ($font-c != null){
+				##{$font-c} {font-size: $size-c * .6}
+			}
+		}
+		@include respond-to-min-max($vp-large, $vp-max){
+			##{$font-a} {font-size: $size-a * .6}
+			@if ($font-b != null){
+				##{$font-b} {font-size: $size-b * .6}
+			}
+			@if ($font-c != null){
+				##{$font-c} {font-size: $size-c * .6}
+			}
+		}
+		@include respond-to($vp-max){
+			##{$font-a} {font-size: $size-a}
+			@if ($font-b != null){
+				##{$font-b} {font-size: $size-b}
+			}
+			@if ($font-c != null){
+				##{$font-c} {font-size: $size-c}
+			}
+		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
