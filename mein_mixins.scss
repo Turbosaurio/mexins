@@ -424,6 +424,32 @@ $bg: $pics + 'bg/';
 	}
 } 
 
+@mixin month-date-square(
+	$first-child: 'item-over',
+	$second-child: 'item-under',
+	$size-x: 150px,
+	$size-y: null,
+	$bg-color: red,
+	$b-radius: null
+	){
+	@include flex-all(column,center,center);
+	width: $size-x;
+	@if $size-y == null{
+		height: $size-x;
+	}
+	@if $b-radius != null{
+		border-radius: $b-radius;
+	}
+	font: {
+		family: $primary-font;
+	}
+	.#{$first-child}{
+	
+	}
+	.#{$second-child}{
+
+	}
+}
 
 @mixin resize-fonts(
 	$size-a: 4rem,
