@@ -114,6 +114,15 @@ $bg: $pics + 'bg/';
 	}
 }
 
+@mixin responsive-from-large($min: 90%){
+	@include width-constrain($min);
+	@include respond-to-min-max($vp-mid, $vp-large){
+		@include width-constrain($vp-mid);
+	}
+	@include respond-to($vp-large){
+		@include width-constrain($vp-large);
+	}
+}
 
 
 ///TEXT MIXINS
@@ -127,7 +136,7 @@ $bg: $pics + 'bg/';
 			@if $hover == underline {
 				text-decoration: underline;
 			} @else {
-				color: $color;
+				color: inherit;
 			}
 		}
 	}
@@ -312,6 +321,8 @@ $bg: $pics + 'bg/';
 	}
 }
 
+
+
 @mixin bg-cover($file, $total: null, $type: '.jpg'){
 	@if $total !=null {
 		@for $i from 1 through $total {
@@ -424,32 +435,6 @@ $bg: $pics + 'bg/';
 	}
 } 
 
-@mixin month-date-square(
-	$first-child: 'item-over',
-	$second-child: 'item-under',
-	$size-x: 150px,
-	$size-y: null,
-	$bg-color: red,
-	$b-radius: null
-	){
-	@include flex-all(column,center,center);
-	width: $size-x;
-	@if $size-y == null{
-		height: $size-x;
-	}
-	@if $b-radius != null{
-		border-radius: $b-radius;
-	}
-	font: {
-		family: $primary-font;
-	}
-	.#{$first-child}{
-	
-	}
-	.#{$second-child}{
-
-	}
-}
 
 @mixin resize-fonts(
 	$size-a: 4rem,
@@ -496,3 +481,69 @@ $bg: $pics + 'bg/';
 		}
 	}
 }
+
+@mixin fade-in-key(
+	$name: 'newKey',
+	$start: rgba($jack-black, .2),
+	$mid: null,
+	$final: rgba($jack-black, 1)
+	){
+	@keyframes #{$name}-fill{
+		0% { fill: $start }
+		@if $mid != null { 50% { fill: $mid } }
+		100% { fill: $final }
+	}
+	@keyframes #{$name}-color{
+		0% { color: $start }
+		@if $mid != null { 50% { color: $mid } }
+		100% { color: $final }
+	}
+	@keyframes #{$name}-bg{
+		0% { background-color: $start }
+		@if $mid != null { 50% { background-color: $mid } }
+		100% { background-color: $final }
+	}
+}
+
+
+@mixin fade-in(
+	$name: 'newKey',
+	$where: color
+	){
+	&.hover, &:focus{
+		animation:{
+			#{$name}: fade-in-#{$where};
+			duration: 1s;
+		}
+	}
+}
+@mixin fade-transition(
+	$from-color: blue,
+	$to-color: red, 
+	$type: color,
+	$speed: .25s
+	){
+	#{$type}: $from-color;
+	transition: $type $speed ease-in-out;
+	-moz-transition: $type $speed ease-in-out;
+  -webkit-transition: $type $speed ease-in-out;
+	&:hover, &:focus{
+		@content;
+		#{$type}: $to-color;
+	}
+}
+@mixin hover{
+	&:hover, &:focus{
+		@content;
+	}
+}
+
+@mixin hover-underline{
+	@include hover{
+		text-decoration: underline;
+	}
+}
+
+
+
+
